@@ -26,8 +26,18 @@ PImage fragilePlatformBrokenImage; // Image for broken fragile platforms
 PImage spikyPlatformImage; // Image for spiky platforms
 PImage healPotionImage; // Image for healing potions
 PImage winImage; // The image displayed when the player wins
+PImage friedImage;
 float winImageY; // The vertical position of the win image
 float winImageHeight; // The height of the win image
+float friedImageHeight;
+float friedImageWidth;
+
+float friedAlpha = 0;
+float friedScale = 0.5;
+boolean friedAppeared = false;
+int friedFrameCounter = 0;
+
+
 int survivalTime = 0; // Time the player has survived in seconds
 int frameCounter = 0; // Counter to track frames for timing purposes
 int gameState; // Current game state
@@ -37,6 +47,7 @@ SoundFile fragilePlatformSound; // Sound for fragile platform interaction
 SoundFile fragilePlatformBrokenSound; // Sound for broken fragile platform interaction
 SoundFile spikyPlatformSound; // Sound for spiky platform interaction
 SoundFile healSound; // Sound for healing
+SoundFile deliciousSound;
 
 // Setup
 void setup() {
@@ -57,9 +68,13 @@ void loadAssets() {
   spikyPlatformImage = loadImage("spiky_platform.png");
   healPotionImage = loadImage("healing_potion.png");
   winImage = loadImage("win_image.png"); // Load the win image
+  friedImage = loadImage("fried.png");
+  friedImage.resize(80, 0); 
   winImage.resize(width, 0); // Resize the win image to fit the screen
   winImageHeight = winImage.height; // Get the height of the win image
   winImageY = height; // set the win image off-screen
+  friedImageHeight = friedImage.height; 
+  friedImageWidth = friedImage.width; 
 
   // Initialize the playerSprites array with subarrays for different movement states
   playerSprites[0] = new PImage[1]; // idle state (1 frame)
@@ -80,6 +95,8 @@ void loadAssets() {
   fragilePlatformBrokenSound = new SoundFile(this, "fragile_broken.mp3");
   spikyPlatformSound = new SoundFile(this, "spiky.mp3");
   healSound = new SoundFile(this, "heal.mp3");
+  deliciousSound = new SoundFile(this, "delicious.MP3");
+  
 }
 
 void initializeGame() {
@@ -209,8 +226,28 @@ void displayWinImage() {
     winImageY -= SLIDE_SPEED;
   } else {
     winImageY = height - winImageHeight; // Stop at the bottom of the screen
+  
+  
+  if (!friedAppeared) {
+      friedAppeared = true;
+      deliciousSound.play(); 
+    }
+    if (friedAlpha < 255) friedAlpha += 5;
+    //if (friedScale < 1.0) friedScale += 0.02;
+    friedScale = 0.8 + 0.1 * sin(radians(friedFrameCounter * 5));
+    
+    friedFrameCounter++;
   }
-  image(winImage, 0, winImageY, width, winImageHeight); // Displays the win image at its current position
+   image(winImage, 0, winImageY, width, winImageHeight); // Displays the win image at its current position
+   
+   pushMatrix();
+  translate(width/2, height/4);
+  scale(friedScale);
+  tint(255, friedAlpha);
+  image(friedImage, -friedImageWidth/2, -friedImageHeight/2);
+  popMatrix();
+  noTint();
+
 }
 
 // Displays a game-over message when the player loses
