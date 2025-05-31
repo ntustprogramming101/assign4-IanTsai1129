@@ -21,7 +21,7 @@ class Platform {
     player.y -= speed; // Move the player up with the platform
     
     // Practice4: Avoid sound being repeatedly played
-
+    
   }
 
   void display() {
